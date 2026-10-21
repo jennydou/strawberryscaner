@@ -31,6 +31,26 @@ function findTotal(lines: string[]): number {
   return m ? toNumber(m[1]) : 0;
 }
 
+const CATEGORIES: Record<string, string> = {
+  "piens": "Pārtika",
+  "maize": "Pārtika",
+  "siers": "Pārtika",
+  "sula": "Dzērieni",
+  "ūdens": "Dzērieni",
+  "šokolāde": "Saldumi un uzkodas",
+  "trauku": "Sadzīves preces",
+  "ziepes": "Higiēna un kosmētika",
+  "šampūns": "Higiēna un kosmētika",
+};
+
+function findCategory(name: string): string {
+  const lower = name.toLowerCase();
+  for (const word in CATEGORIES) {
+    if (lower.includes(word)) return CATEGORIES[word];
+  }
+  return "Cits";
+}
+
 function findItems(lines: string[]): Item[] {
   const items: Item[] = [];
   let lastName = "";
@@ -50,9 +70,9 @@ function findItems(lines: string[]): Item[] {
     if (name.includes(" x ")) {
       // a quantity line like "2 x 2,41": the name is on the line above
       const quantity = toNumber(name.split(" x ")[0]);
-      items.push({ name: lastName, quantity: quantity, price: price, category: "Cits" });
+      items.push({ name: lastName, quantity: quantity, price: price, category: findCategory(lastName) });
     } else {
-      items.push({ name: name, quantity: 1, price: price, category: "Cits" });
+      items.push({ name: name, quantity: 1, price: price, category: findCategory(name) });
     }
   }
   return items;
