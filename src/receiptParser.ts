@@ -13,7 +13,7 @@ function findStore(text: string): string {
 export function parseReceipt(text: string): Receipt {
   const lines = text.split("\n").map(l => l.trim()).filter(l => l);
 
-  return { store: findStore(text), date: findDate(text), total: findTotal(lines), items: [], warning: null };
+  return { store: findStore(text), date: findDate(text), total: findTotal(lines), items: findItems(lines), warning: null };
 }
 function findDate(text: string): string {
   const m = text.match(/(\d{2})\.(\d{2})\.(\d{4})/);
@@ -29,4 +29,15 @@ function findTotal(lines: string[]): number {
   if (!line) return 0;
   const m = line.match(/(\d+[.,]\d{2})/);
   return m ? toNumber(m[1]) : 0;
+}
+
+function findItems(lines: string[]): Item[] {
+  const items: Item[] = [];
+  for (const line of lines) {
+    if (/KOP[AĀ]|KOKKU/i.test(line)) break;
+    const m = line.match(/^(.+?)\s+(-?\d+[.,]\d{2})\s*[A-Z]?$/);
+    if (!m) continue;
+    items.push({ name: m[1], quantity: 1, price: toNumber(m[2]), category: "Cits" });
+  }
+  return items;
 }
