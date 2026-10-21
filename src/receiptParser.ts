@@ -12,9 +12,18 @@ function findStore(text: string): string {
 
 export function parseReceipt(text: string): Receipt {
   const lines = text.split("\n").map(l => l.trim()).filter(l => l);
+  const items = findItems(lines);
+  const total = findTotal(lines);
 
-  return { store: findStore(text), date: findDate(text), total: findTotal(lines), items: findItems(lines), warning: null };
+  return {
+    store: findStore(text),
+    date: findDate(text),
+    total: total,
+    items: items,
+    warning: checkSum(items, total),
+  };
 }
+
 function findDate(text: string): string {
   const m = text.match(/(\d{2})\.(\d{2})\.(\d{4})/);
   if (!m) return "";
@@ -60,7 +69,7 @@ function findItems(lines: string[]): Item[] {
 
     const m = line.match(/^(.+?)\s+(-?\d+[.,]\d{2})\s*[A-Z]?$/);
     if (!m) {
-      lastName = line; // no price, so this may be the name for the next line
+      lastName = line;
       continue;
     }
 
@@ -68,7 +77,6 @@ function findItems(lines: string[]): Item[] {
     const price = toNumber(m[2]);
 
     if (name.includes(" x ")) {
-      // a quantity line like "2 x 2,41": the name is on the line above
       const quantity = toNumber(name.split(" x ")[0]);
       items.push({ name: lastName, quantity: quantity, price: price, category: findCategory(lastName) });
     } else {
@@ -76,4 +84,15 @@ function findItems(lines: string[]): Item[] {
     }
   }
   return items;
+}
+
+function checkSum(items: Item[], total: number): string | null {
+  let sum = 0;
+  for (const item of items) {
+    sum += item.price;
+  }
+  sum = Math.round(sum * 100) / 100;
+
+  if (sum === total) return null;
+  return "Summas nesakrīt";
 }
