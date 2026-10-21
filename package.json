@@ -1,13 +1,14 @@
 {
   "name": "part1",
   "version": "1.0.0",
-  "description": "",
+  "description": "Čeku apstrādes un OCR modulis",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "tsx src/index.ts",
+    "dev": "tsx watch src/index.ts"
   },
   "keywords": [],
-  "author": "",
+  "author": "Artjoms Svirjajevs",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
@@ -17,6 +18,7 @@
   "devDependencies": {
     "@types/node": "^26.6.5",
     "ts-node": "^10.9.2",
+    "tsx": "^4.19.2",
     "typescript": "^7.0.2"
   }
 }
