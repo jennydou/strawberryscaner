@@ -33,11 +33,27 @@ function findTotal(lines: string[]): number {
 
 function findItems(lines: string[]): Item[] {
   const items: Item[] = [];
+  let lastName = "";
+
   for (const line of lines) {
     if (/KOP[AĀ]|KOKKU/i.test(line)) break;
+
     const m = line.match(/^(.+?)\s+(-?\d+[.,]\d{2})\s*[A-Z]?$/);
-    if (!m) continue;
-    items.push({ name: m[1], quantity: 1, price: toNumber(m[2]), category: "Cits" });
+    if (!m) {
+      lastName = line; // no price, so this may be the name for the next line
+      continue;
+    }
+
+    const name = m[1];
+    const price = toNumber(m[2]);
+
+    if (name.includes(" x ")) {
+      // a quantity line like "2 x 2,41": the name is on the line above
+      const quantity = toNumber(name.split(" x ")[0]);
+      items.push({ name: lastName, quantity: quantity, price: price, category: "Cits" });
+    } else {
+      items.push({ name: name, quantity: 1, price: price, category: "Cits" });
+    }
   }
   return items;
 }
