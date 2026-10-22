@@ -60,12 +60,23 @@ function findCategory(name: string): string {
   return "Cits";
 }
 
+const SKIP_WORDS = ["raha", "saldo", "netus", "teenitud", "sinu", "mans rimi", "pvn", "pvm", "karte"];
+
+function shouldSkip(line: string): boolean {
+  const lower = line.toLowerCase();
+  for (const word of SKIP_WORDS) {
+    if (lower.includes(word)) return true;
+  }
+  return false;
+}
+
 function findItems(lines: string[]): Item[] {
   const items: Item[] = [];
   let lastName = "";
 
   for (const line of lines) {
     if (/KOP[AĀ]|KOKKU/i.test(line)) break;
+        if (shouldSkip(line)) continue;
 
     const m = line.match(/^(.+?)\s+(-?\d+[.,]\d{2})\s*[A-Z]?$/);
     if (!m) {
@@ -88,6 +99,7 @@ function findItems(lines: string[]): Item[] {
 
 function checkSum(items: Item[], total: number): string | null {
   let sum = 0;
+  if (total === 0) return "Kopsumma nav atrasta";
   for (const item of items) {
     sum += item.price;
   }
