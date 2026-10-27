@@ -107,7 +107,7 @@ function checkSum(items: Item[], total: number): string | null {
 }
 
 export function parseReceipt(text: string): Receipt {
-  const lines = text.split("\n").map(l => l.trim()).filter(l => l);
+  const lines = text.split("\n").map(l => l.trim()).filter(l => l && l.length <= 200);
   const items = findItems(lines);
   const total = findTotal(lines);
 
